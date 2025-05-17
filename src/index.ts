@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/health', (_req: Request, res: Response) => {
-  res.send('OK');
+  res.send('We good baby');
 });
 
 const port = Number(process.env.PORT) || 8080;
