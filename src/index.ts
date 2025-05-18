@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { createNewGame, isLegalMove, applyMove } from './game/rules';
 import type { GameState } from './game/types';
 import { v4 as uuid } from 'uuid';
-import { saveGame, loadGame } from './game/gameRepo';
+import { saveGame, loadGame, deleteGame } from './game/gameRepo';
 
 const app = express();
 app.use(express.json());
@@ -29,19 +29,25 @@ app.post('/games/:id/move', (req, res)  => {
     return 
   } 
 
-  if (!isLegalMove(game, from, to, remove)){
-    res.sendStatus(404).json({error: 'Move not valid', code: 'INVALID_MOVE' })
+  if (player !== game.toMove){
+    res.status(403).json({error: 'It is not your turn', code: 'NOT_YOUR_TURN'})
   }
 
+  if (!isLegalMove(game, from, to, remove)){
+    res.sendStatus(404).json({error: 'Spot occupied', code: 'SPOT_NOT_EMPTY' })
+  }
 
+  const next = applyMove(game, from, to, remove);
+  saveGame(req.params.id, next);
+  res.json(next)
+  return 
 
-  
-  // if(!game) return res.sendStatus(404);
+})
 
-  // if(!isLegalMove(game, from, to, remove)){
-    
-  // }
-
+app.post('/games/:id/finished', (req, res) => {
+  deleteGame(req.params.id);
+  res.sendStatus(201);
+  return 
 })
 
 

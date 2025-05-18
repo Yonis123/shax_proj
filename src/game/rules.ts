@@ -107,10 +107,12 @@ export function applyMove(state: GameState, from: number, to: number, removal: n
 
     if (checkWin(state)){
       state.phase = 'finished';
-      return 
+      state.winner = state.toMove;
+      return state
     }
 
     state.toMove = switchPlayer(state);
+    return state
 
 
 }
