@@ -1,5 +1,5 @@
 import { stat } from 'fs';
-import type { GameState } from './types.ts'
+import type { GameState, Player } from './types.ts'
 import {v4 as uuid} from 'uuid';
 
 const ADJACENT: Record<number, number[]> = {
@@ -39,8 +39,12 @@ export function createNewGame(): GameState {
   };
 }
 
+export function isLegalRemoval(state: GameState, removal: number): boolean{
 
-export function isLegalMove( state: GameState, from: number, to: number): boolean{
+  return true;
+}
+
+export function isLegalMove( state: GameState, from: number, to: number, removal: number): boolean{
 
   //handles if we are in placing phase
 
@@ -52,6 +56,12 @@ export function isLegalMove( state: GameState, from: number, to: number): boolea
     }
   }
 
+  // if we are in removal phase, then we will check if the players whose turn it is actually clicked on the other players piece 
+
+  if (state.phase === 'removal'){
+    return isLegalRemoval(state, removal);
+  }
+
   // handles if we are in moving phase
   
   if (state.phase == 'moving'){
@@ -59,6 +69,7 @@ export function isLegalMove( state: GameState, from: number, to: number): boolea
     if (state.board[from] != state.toMove || state.board[to] != null){
       return false;
     }
+
 
     // i need to check if the place they are moving is up down left or right 
 
@@ -71,15 +82,36 @@ export function isLegalMove( state: GameState, from: number, to: number): boolea
   return false;
 }
 
-export function applyMove(state: GameState, from: number, to: number){
+export function applyMove(state: GameState, from: number, to: number, removal: number){
 
-    // check if we should switch phase 
-    if ()
+    
+
+    if(state.phase == 'placing'){
+
+      state.board[to] = state.toMove;
+     
+    }else if (state.phase == 'removal'){
+
+      state.board[removal] = null;
+      let curr_turn: Player = state.toMove
+      state.captured[curr_turn] += 1;
 
 
-    state.board[from] = null;
-    state.board[to] == state.toMove;
+    } else{
+      
+      state.board[from] = null;
+      state.board[to] == state.toMove;
+      
+
+    }
+
+    if (checkWin(state)){
+      state.phase = 'finished';
+      return 
+    }
+
     state.toMove = switchPlayer(state);
+
 
 }
 
@@ -92,4 +124,10 @@ export function switchPlayer(state: GameState){
   }
 
   return state.toMove;
+}
+
+
+export function checkWin(state: GameState): boolean{
+
+  return true;
 }
