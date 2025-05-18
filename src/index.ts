@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
-import { createNewGame, isLegalMove, applyMove } from './game/rules';
+import { createNewGame, isLegalMove, applyMove, isJare } from './game/rules';
 import type { GameState } from './game/types';
 import { v4 as uuid } from 'uuid';
 import { saveGame, loadGame, deleteGame } from './game/gameRepo';
@@ -52,7 +52,9 @@ app.post('/games/:id/finished', (req, res) => {
 
 
 
-
+app.post('/games/:id/jare', (req, res)  => {
+  
+}
 
 
 

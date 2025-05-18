@@ -1,33 +1,9 @@
 import { stat } from 'fs';
 import type { GameState, Player } from './types.ts'
 import {v4 as uuid} from 'uuid';
+import {ADJACENT, MILL_PATTERNS} from './constants';
 
-const ADJACENT: Record<number, number[]> = {
-  0:  [1, 9],
-  1:  [0, 2, 4],
-  2:  [1, 14],
-  3:  [4, 10],
-  4:  [1, 3, 5, 7],
-  5:  [4, 13],
-  6:  [7, 11],
-  7:  [4, 6, 8],
-  8:  [7, 12],
-  9:  [0, 10, 21],
-  10: [3, 9, 11, 18],
-  11: [6, 10, 15],
-  12: [8, 13, 17],
-  13: [5, 12, 14, 20],
-  14: [2, 13, 23],
-  15: [11, 16],
-  16: [15, 17, 19],
-  17: [12, 16],
-  18: [10, 19],
-  19: [16, 18, 20, 22],
-  20: [13, 19],
-  21: [9, 22],
-  22: [19, 21, 23],
-  23: [14, 22],
-};
+
 
 export function createNewGame(): GameState {
   return {
@@ -39,9 +15,20 @@ export function createNewGame(): GameState {
   };
 }
 
-export function isLegalRemoval(state: GameState, removal: number): boolean{
+export function isLegalRemoval(state: GameState, removal: number, curr_player: 'W' | 'B'): boolean{
 
-  return true;
+    let opposing_player: Player;
+  if (curr_player === 'W') {
+    opposing_player = 'B';
+  } else {
+    opposing_player = 'W';
+  }
+
+
+  if (state.board[removal] == opposing_player){
+    return true;
+  }
+  return false;
 }
 
 export function isLegalMove( state: GameState, from: number, to: number, removal: number): boolean{
@@ -59,7 +46,7 @@ export function isLegalMove( state: GameState, from: number, to: number, removal
   // if we are in removal phase, then we will check if the players whose turn it is actually clicked on the other players piece 
 
   if (state.phase === 'removal'){
-    return isLegalRemoval(state, removal);
+    return isLegalRemoval(state, removal, state.toMove);
   }
 
   // handles if we are in moving phase
@@ -111,6 +98,11 @@ export function applyMove(state: GameState, from: number, to: number, removal: n
       return state
     }
 
+    if(isJare(state, state.toMove, to)){
+      state.phase = 'jare';
+      return state
+    }
+
     state.toMove = switchPlayer(state);
     return state
 
@@ -131,5 +123,34 @@ export function switchPlayer(state: GameState){
 
 export function checkWin(state: GameState): boolean{
 
-  return true;
+  if (state.captured[state.toMove] < 3){
+    return true;
+  }
+
+  return false;
+}
+
+export function use_for_jare(state: GameState, removal: number){
+  //remove the removal one, then toggle the turn
+   
+
+}
+
+export function isJare(state: GameState, player: Player, pos?: number): boolean {
+
+  for (const pattern of MILL_PATTERNS){
+    if (pos !== undefined && !pattern.includes(pos)){
+      continue 
+    }
+
+    const isFullMill = pattern.every(spot => state.board[spot] == player);
+    if(isFullMill){
+      return true;
+    }
+
+  }
+
+  return false
+
+
 }

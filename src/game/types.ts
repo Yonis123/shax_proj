@@ -6,7 +6,7 @@ export type Cell = Player | null
 export interface GameState {
     board: Cell[]
     toMove: Player 
-    phase: 'placing' | 'removal' | 'moving'  | 'finished'
+    phase: 'placing' | 'removal' | 'moving'  | 'finished' | 'jare'
     captured: {W: number; B: number}
     winner?: Player 
 }
