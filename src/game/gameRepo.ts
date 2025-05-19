@@ -1,6 +1,10 @@
 import type { GameState } from './types';
 
-const games: Record<string, GameState> = {};
+let games: Record<string, GameState> = {};
+
+export function resetGames() {
+  games = {}
+}
 
 export function saveGame(id: string, state: GameState) {
   games[id] = state;

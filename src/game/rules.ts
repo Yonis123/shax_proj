@@ -144,10 +144,12 @@ export function use_for_jare(state: GameState, player: Player ,removal: number){
     if (checkWin(state)){
       state.phase = 'finished';
       state.winner = state.toMove;
-      return state
+      
     }
    
     state.toMove = player == 'W'? 'B': 'W';
+
+    return true
   
 
 }
