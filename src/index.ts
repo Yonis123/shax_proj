@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
-import { createNewGame, isLegalMove, applyMove, isJare } from './game/rules';
+import { createNewGame, isLegalMove, applyMove, isJare, use_for_jare, help } from './game/rules';
 import type { GameState } from './game/types';
 import { v4 as uuid } from 'uuid';
 import { saveGame, loadGame, deleteGame } from './game/gameRepo';
@@ -53,9 +53,46 @@ app.post('/games/:id/finished', (req, res) => {
 
 
 app.post('/games/:id/jare', (req, res)  => {
-  
-}
+   const {player, removal} = req.body as {player: 'W' | 'B', removal: number}
+   let game = loadGame(req.params.id);
+   if (!game){
+    res.sendStatus(404).json({error: 'Game not found', code: 'GAME_NOT_FOUND'});
+    return 
+  } 
 
+  if (player !== game.toMove){
+    res.status(403).json({error: 'It is not your turn', code: 'NOT_YOUR_TURN'})
+  }
+   if (!use_for_jare(game, player, removal)){
+      res.sendStatus(403).json({error: 'You did not select an appropriate piece', code: "Invalid Jare"})
+      
+   } else {
+       res.sendStatus(201)
+   }
+  
+  return 
+})
+
+app.post('/games/:id/jare_help', (req, res)  => {
+   const {player, removal} = req.body as {player: 'W' | 'B', removal: number}
+   let game = loadGame(req.params.id);
+   if (!game){
+    res.sendStatus(404).json({error: 'Game not found', code: 'GAME_NOT_FOUND'});
+    return 
+  } 
+
+  if (player !== game.toMove){
+    res.status(403).json({error: 'It is not your turn', code: 'NOT_YOUR_TURN'})
+  }
+
+  help(game);
+
+  res.status(201);
+
+  return 
+
+
+})
 
 
 

@@ -130,8 +130,22 @@ export function checkWin(state: GameState): boolean{
   return false;
 }
 
-export function use_for_jare(state: GameState, removal: number){
-  //remove the removal one, then toggle the turn
+export function use_for_jare(state: GameState, player: Player ,removal: number){
+  
+  if (!isLegalRemoval(state, removal, player)){
+    return false
+  } else {
+    state.board[removal] = null;
+    state.captured[state.toMove] += 1
+    if (checkWin(state)){
+      state.phase = 'finished';
+      state.winner = state.toMove;
+      return state
+    }
+
+    state.toMove = switchPlayer(state);
+
+  }
    
 
 }
@@ -153,4 +167,9 @@ export function isJare(state: GameState, player: Player, pos?: number): boolean 
   return false
 
 
+}
+
+export function help(state: GameState): boolean {
+  state.toMove = switchPlayer(state)
+  return true 
 }
