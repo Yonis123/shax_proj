@@ -36,7 +36,7 @@ export function isLegalMove( state: GameState, from: number, to: number, removal
   //handles if we are in placing phase
 
   if(state.phase === 'placing'){
-    if(state.board[to] == null){
+    if(state.board[to] === null){
       return true;
     } else {
       return false;
@@ -87,8 +87,7 @@ export function applyMove(state: GameState, from: number, to: number, removal: n
     } else{
       
       state.board[from] = null;
-      state.board[to] == state.toMove;
-      
+      state.board[to] = state.toMove;
 
     }
 
@@ -123,7 +122,7 @@ export function switchPlayer(state: GameState){
 
 export function checkWin(state: GameState): boolean{
 
-  if (state.captured[state.toMove] < 3){
+  if (state.captured[state.toMove] > 10){
     return true;
   }
 
@@ -133,20 +132,23 @@ export function checkWin(state: GameState): boolean{
 export function use_for_jare(state: GameState, player: Player ,removal: number){
   
   if (!isLegalRemoval(state, removal, player)){
+    
     return false
-  } else {
+  } 
+
+
     state.board[removal] = null;
     state.captured[state.toMove] += 1
+
+
     if (checkWin(state)){
       state.phase = 'finished';
       state.winner = state.toMove;
       return state
     }
-
-    state.toMove = switchPlayer(state);
-
-  }
    
+    state.toMove = player == 'W'? 'B': 'W';
+  
 
 }
 

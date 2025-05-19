@@ -12,4 +12,5 @@ export function loadGame(id: string): GameState | undefined {
 
 export function deleteGame(id: string): void {
   delete games[id];
+  
 }
